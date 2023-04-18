@@ -22,6 +22,17 @@ class ListenerSetter {
     };
 
     setChangeCurrencyListener() {
+      let elements = document.getElementsByClassName("currency-select");
+      for(let element of elements){
+        element.addEventListener("click", (event) => {
+          let el = event.target;
+          console.log(el);
+          let currency = el.getAttribute('data-value'); 
+          console.log('data-value=', currency);
+          this.app.changeCurrency(currency);
+          console.log(event);
+        })
+      }
       console.log('change currency');
     }
 

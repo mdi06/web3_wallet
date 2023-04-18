@@ -38,10 +38,9 @@ class EthLib {
         });
       }
 
-    getBalance() {
+    getBalance(address) {
         return new Promise(async (resolve, reject) => {
           try {
-            let address = await this.getAddress();
             let balance = await this.web3.eth.getBalance(address);
             balance = this.web3.utils.fromWei(balance);
             return resolve(balance);
@@ -55,8 +54,7 @@ class EthLib {
         return new Promise(async (resolve, reject) => {
           try {
             let address = await this.getAddress();
-            let balance = await this.web3.eth.getBalance(address);
-            balance = this.web3.utils.fromWei(balance);
+            let balance = await this.getBalance(address);
             return resolve(balance);
           } catch (e) {
             return reject(e);
@@ -109,6 +107,7 @@ class EthLib {
 
       fromDecimals(amount) {
         return this.web3.utils.toWei(amount);
+        //return this.web3.utils.toWei(amount.toString(), 'ether');
       }
 
       getGasPrice() {

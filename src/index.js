@@ -14,6 +14,11 @@ class Application {
     this.blockchain = new BlockchainService(this);
   }
 
+  changeCurrency(currency) {
+    this.setCurrency(currency);
+    this.prepareInterface();
+  }
+
 
   prepareInterface(){
     this.WalletUi.prepareInterface();

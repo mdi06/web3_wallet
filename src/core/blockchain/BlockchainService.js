@@ -1,27 +1,28 @@
 import EthLib from "./eth/EthLib";
+import Erc20Lib from "./erc20/Erc20Lib";
 
 
 class BlockchainService {
 
-    constructor() {
-        this.eth = new EthLib();
+    constructor(app) {
+        this.app = app;
+        let eth = new EthLib();
+        let erc20 = new Erc20Lib();
+        this.libraries ={
+          "ETH": eth,
+          "ERC20": erc20
+        };
     }
 
-    getBalance() {
-        return new Promise(async (resolve, reject) => {
-          try {
-            let balance = await this.eth.getBalance();
-            return resolve(balance);
-          } catch (e) {
-            return reject(e);
-          }
-        });
-      }
+
+    getCurrentLibrary() {
+      return this.libraries[this.app.getCurrency()];
+    }
 
       getCurrentBalance(){
         return new Promise(async(resolve,reject)=>{
             try{
-                let balance = await this.eth.getCurrentBalance();
+                let balance = await this.getCurrentLibrary().getCurrentBalance();
                 return resolve(balance);
             }catch (e) {
                 return reject(e);
@@ -32,7 +33,7 @@ class BlockchainService {
       getAddress() {
         return new Promise(async (resolve, reject) => {
           try {
-            let balance = await this.eth.getAddress();
+            let balance = await this.getCurrentLibrary().getAddress();
             return resolve(balance);
           } catch (e) {
             return reject(e);
@@ -43,7 +44,7 @@ class BlockchainService {
       sendCurrency(to, amount) {
         return new Promise(async (resolve, reject) => {
           try {
-            let result = await this.eth.sendCurrency(to, amount);
+            let result = await this.getCurrentLibrary().sendCurrency(to, amount);
             return resolve(result);
           } catch (e) {
             return reject(e);
