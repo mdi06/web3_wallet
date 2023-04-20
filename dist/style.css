@@ -101,7 +101,7 @@ a {
 }
 
 .crypto-send input[type="text"] {
-    background-color: #8888 !important;
+    background-color: #8888 ;
     /* set a light gray color for the first input field */
     font-size: 1rem;
     padding: 10px;

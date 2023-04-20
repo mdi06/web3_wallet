@@ -1,20 +1,26 @@
 let address = process.env.ETH_ADDRESS;
 let privateKey = process.env.ETH_PRIVATEKEY;
-const providerURL = process.env.ETH_PROVIDERURL;
+const PROVIDER_URL = process.env.ETH_PROVIDERURL;
 
 let GWEI = 10**9;
 let GAS_PRICE = 70* GWEI;
 let GAS_LIMIT = 21000;
 
-import Transaction from 'ethereumjs-tx';
-
-
 const Web3 = require("web3");
+import Transaction from 'ethereumjs-tx';
+import EthConverter from '../../helpers/EthConverter';
+import Validator from '../../validators/blockchain/EthValidator';
+
+import AbstractCurrencyLib from '../AbstractCurrencyLib';
 
 
-class EthLib {
+class EthLib extends AbstractCurrencyLib {
     constructor() {
-        this.web3 = new Web3(new Web3.providers.HttpProvider(providerURL));
+        let web3 = new Web3(new Web3.providers.HttpProvider(PROVIDER_URL));
+        //this.web3 = new Web3(new Web3.providers.HttpProvider(providerURL));
+        let converter = new EthConverter();
+        let validator = new Validator();
+        super(web3,validator,converter);
     }
 
 
@@ -41,8 +47,8 @@ class EthLib {
     getBalance(address) {
         return new Promise(async (resolve, reject) => {
           try {
-            let balance = await this.web3.eth.getBalance(address);
-            balance = this.web3.utils.fromWei(balance);
+            let balance = await this.provider.eth.getBalance(address);
+            balance = this.provider.utils.fromWei(balance);
             return resolve(balance);
           } catch (e) {
             return reject(e);
@@ -65,6 +71,8 @@ class EthLib {
       sendCurrency(to, amount) {
         return new Promise(async(resolve,reject)=> {
           try {
+            this.validator.validateAddress(to,"Tx Receiver");
+            this.validator.validatorNumber(amount, "sendCurrency Amount");
             let txData = await this._formatTransactionParams(to, amount);
             let hash = await this._makeTransaction(txData);
             return resolve(hash);
@@ -77,10 +85,18 @@ class EthLib {
       _formatTransactionParams(to, value, data){
         return new Promise(async(resolve,reject)=> {
           try {
+            this.validator.validateAddress(to);
+            this.validator.validateNumber(value);
+            this.validator.validateString(data);
+
             let privateKey = await this.getPrivateKey();
             let privKeyBuffer=Buffer.from(privateKey,'hex');
             let from = await this.getAddress();
             let nonce = await this.getNextNonce();
+
+            this.validator.validateAddress(from);
+            this.validator.validateNumber(nonce);
+
             let gasPrice = this.getGasPrice();
             let gasLimit = this.getGasLimit();
             value = this.fromDecimals(value);
@@ -88,8 +104,8 @@ class EthLib {
               "from":from,
               "to":to,
               "privateKey":privKeyBuffer,
-              "value":this.web3.utils.numberToHex(value),
-              "gasPrice":this.web3.utils.numberToHex(gasPrice),
+              "value":this.provider.utils.numberToHex(value),
+              "gasPrice":this.provider.utils.numberToHex(gasPrice),
               "gasLimit":gasLimit,
               "nonce":nonce,
               "data":data,
@@ -102,12 +118,11 @@ class EthLib {
       }
 
       toDecimals(amount) {
-        return this.web3.utils.fromWei(amount);
+        return this.converter.toDecimals(amount);
       }
 
       fromDecimals(amount) {
-        return this.web3.utils.toWei(amount);
-        //return this.web3.utils.toWei(amount.toString(), 'ether');
+        return this.converter.fromDecimals(amount);
       }
 
       getGasPrice() {
@@ -122,7 +137,7 @@ class EthLib {
         return new Promise(async(resolve,reject)=>{
             try{
                 let address = await this.getAddress();
-                let nonce =await this.web3.eth.getTransactionCount(address);
+                let nonce =await this.provider.eth.getTransactionCount(address);
                 return resolve(nonce);
             }catch (e){
                 return reject(e)
@@ -138,7 +153,7 @@ class EthLib {
                 tx.sign(txParams.privateKey);
                 var raw = "0x"+tx.serialize().toString('hex');
 
-                this.web3.eth.sendSignedTransaction(raw).on("receipt",(data)=>{
+                this.provider.eth.sendSignedTransaction(raw).on("receipt",(data)=>{
                     console.log(data);
                     let transactionHash = data["transactionHash"];
                     return resolve(transactionHash);

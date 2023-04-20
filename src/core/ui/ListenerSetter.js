@@ -12,6 +12,7 @@ class ListenerSetter {
   setSendListener() {
 
     document.getElementById("send_button").addEventListener("click", (e) => {
+      e.preventDefault();
       let to = document.getElementById('receiver').value;
       let amount = document.getElementById('amount').value;
         this.app.sendCurrency(to, amount).then((result)=> {

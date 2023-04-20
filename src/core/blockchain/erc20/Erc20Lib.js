@@ -1,6 +1,6 @@
 import EthLib from "../eth/EthLib";
 import ERC20_ABI from "./erc20_abi";
-import Converter from "../../helpers/converter"
+import Converter from "../../helpers/Erc20Converter";
 
 const contractAddress = process.env.ERC_20_CONTRACT_ADDRESS;
 const GAS_LIMIT = 300000;
@@ -17,7 +17,7 @@ class Erc20Lib extends EthLib {
 
     composeContract() {
         console.log("ComposeCotract start", ERC20_ABI)
-        let contract = new this.web3.eth.Contract(ERC20_ABI, this.getContractAddress());
+        let contract = new this.provider.eth.Contract(ERC20_ABI, this.getContractAddress());
         console.log("composeContract end", ERC20_ABI);
         return contract;
     }

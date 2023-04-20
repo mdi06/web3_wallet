@@ -1,5 +1,6 @@
 import EthLib from "./eth/EthLib";
 import Erc20Lib from "./erc20/Erc20Lib";
+import BtcLib from "../blockchain/btc/BtcLib";
 
 
 class BlockchainService {
@@ -8,9 +9,12 @@ class BlockchainService {
         this.app = app;
         let eth = new EthLib();
         let erc20 = new Erc20Lib();
+        let btc = new BtcLib();
         this.libraries ={
           "ETH": eth,
-          "ERC20": erc20
+          "ERC20": erc20,
+          "BTC": btc
+
         };
     }
 

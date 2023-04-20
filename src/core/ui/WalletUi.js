@@ -14,7 +14,6 @@ class WalletUi {
 
     prepareInterface(){
         this.renderer.renderUi();
-        this.listenerSetter.setEventListeners();
       }
 }
 
