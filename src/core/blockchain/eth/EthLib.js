@@ -117,14 +117,6 @@ class EthLib extends AbstractCurrencyLib {
         })
       }
 
-      toDecimals(amount) {
-        return this.converter.toDecimals(amount);
-      }
-
-      fromDecimals(amount) {
-        return this.converter.fromDecimals(amount);
-      }
-
       getGasPrice() {
         return GAS_PRICE;
       }

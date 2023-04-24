@@ -80,15 +80,6 @@ class Erc20Lib extends EthLib {
         })
       }
 
-      toDecimals(amount) {
-        return this.converter.toDecimals(amount, this.getDecimals());
-      }
-
-      fromDecimals(amount) {
-        return this.converter.fromDecimals(amount, this.getDecimals());
-        //return this.web3.utils.toWei(amount.toString(), 'ether');
-      }
-
       getDecimals() {
         return DECIMALS;
       }

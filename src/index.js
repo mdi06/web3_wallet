@@ -2,16 +2,17 @@ const CURRENCY = "ETH";
 const ERC20 = 'ERC20';
 
 import WalletUi from './core/ui/WalletUi';
-
 import BlockchainService from './core/blockchain/BlockchainService';
-
+import HttpService from './core/services/HttpService';
 
 class Application {
 
   constructor() {
     this.setCurrency(CURRENCY);
+    this.httpService = new HttpService(this);
     this.WalletUi = new WalletUi(this);
     this.blockchain = new BlockchainService(this);
+    
   }
 
   changeCurrency(currency) {
